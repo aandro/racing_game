@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using TMPro;
 using UnityEngine;
 
 public class LevelStatistics : MonoBehaviour
@@ -7,8 +8,11 @@ public class LevelStatistics : MonoBehaviour
 
     private Stopwatch _timer = new Stopwatch();
 
-    [SerializeField] private double TimeElapsed;
-    [SerializeField] private int StarsEarned;
+    [SerializeField]
+    private TextMeshProUGUI TimerLabel;
+
+    [SerializeField]
+    private TextMeshProUGUI StatisticLabel;
 
     // Start is called before the first frame update
     void Start()
@@ -19,12 +23,12 @@ public class LevelStatistics : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TimeElapsed = _timer.Elapsed.TotalSeconds; //todo
-        StarsEarned = 0; //todo calc
+        TimerLabel.text = _timer.Elapsed.ToString("mm\\:ss\\.ff");
+        StatisticLabel.text = _checkpointCount.ToString(); //todo calc
 
-        if (TimeElapsed == 30000) //todo is it reliable?
+        if (_timer.Elapsed.TotalMilliseconds >= 30000) //todo is it reliable?
         {
-            _timer.Stop();
+            _timer.Stop(); //run something to show end
         }
     }
 
@@ -37,7 +41,12 @@ public class LevelStatistics : MonoBehaviour
 
     public void DoActivateTrigger()
     {
-        UnityEngine.Debug.Log("DoActivateTrigger" + ++_checkpointCount);
+        if (_checkpointCount == 6 || _timer.Elapsed.TotalMilliseconds >= 30000)
+        {
+            return;
+        }
+
+        UnityEngine.Debug.Log("DoActivateTrigger" + ++_checkpointCount); //todo run some animation ?
     }
 
 
