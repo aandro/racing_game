@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using UnityStandardAssets.Vehicles.Car;
 
 namespace UnityStandardAssets.Utility
 {
@@ -89,7 +90,29 @@ namespace UnityStandardAssets.Utility
 
         private void OnTriggerEnter(Collider other)
         {
+            if (!SatisfiesCondition(other))
+            {
+                return;
+            }
+
             DoActivateTrigger();
+        }
+
+        private bool SatisfiesCondition(Collider c)
+        {
+            var t = c.transform;
+            do
+            {
+                if (t.GetComponent<CarController>() != null)
+                {
+                    return true;
+                }
+
+                t = t.parent;
+            }
+            while (t != null);
+
+            return false;
         }
     }
 }
