@@ -5,6 +5,8 @@ using TMPro;
 
 public class LevelController : MonoBehaviour
 {
+    private bool _levelIsFinished = false;
+
     public CheckpointTrigger[] Checkpoints;
 
     public double TimeFor3StarsInSeconds;
@@ -14,11 +16,10 @@ public class LevelController : MonoBehaviour
     private Stopwatch _timer = new Stopwatch();
 
     private int _nextCheckpoint = 0;
-    private int _currentScore = 0;
 
     public event EventHandler<int> ScoreUpdated;
     public event EventHandler CheckpointErrorOccured;
-    public event EventHandler TimeEnded;
+    public event EventHandler<int> TimeEnded;
 
     [SerializeField]
     private TextMeshProUGUI TimerLabel;
@@ -28,7 +29,7 @@ public class LevelController : MonoBehaviour
 
     void Start()
     {
-        foreach(var checkpoint in Checkpoints)
+        foreach (var checkpoint in Checkpoints)
         {
             checkpoint.CheckpointPassed += Checkpoint_OnCheckpointPassed;
         }
@@ -38,10 +39,8 @@ public class LevelController : MonoBehaviour
 
     void Update()
     {
-        if (NoTime())
-        {
-            UpdateScore();
-        }
+        NoTime();
+        NoCheckpoints();
 
         TimerLabel.text = _timer.Elapsed.ToString("mm\\:ss\\.ff");
         StatisticLabel.text = "Checkpoints passed: " + _nextCheckpoint.ToString();
@@ -58,7 +57,6 @@ public class LevelController : MonoBehaviour
         if (nextCheckpoint.CheckpointId == e)
         {
             _nextCheckpoint++;
-            UpdateScore();
         }
         else
         {
@@ -68,17 +66,26 @@ public class LevelController : MonoBehaviour
 
     private void StartCountdown()
     {
+        _levelIsFinished = false;
+        _nextCheckpoint = 0;
+
         _timer = new Stopwatch();
         _timer.Start();
     }
 
     private bool NoTime()
     {
+        if (_levelIsFinished)
+        {
+            return true;
+        }
+
         var availableTimeElapsed = (_timer.Elapsed.TotalSeconds >= TimeFor1StarInSeconds);
         if (availableTimeElapsed)
         {
             _timer.Stop();
-            TimeEnded?.Invoke(this, EventArgs.Empty);
+            _levelIsFinished = true;
+            TimeEnded?.Invoke(this, (int)CalculateScore());
         }
 
         return availableTimeElapsed;       
@@ -86,18 +93,24 @@ public class LevelController : MonoBehaviour
 
     private bool NoCheckpoints()
     {
-        return _nextCheckpoint > Checkpoints.Length - 1;
-    }
+        if (_levelIsFinished)
+        {
+            return true;
+        }
 
-    private void UpdateScore()
-    {
-        _currentScore = (int)CalculateScore();
-        ScoreUpdated?.Invoke(this, _currentScore);
+        var allCheckpointsPassed = _nextCheckpoint > Checkpoints.Length - 1;
+        if (allCheckpointsPassed)
+        {
+            _levelIsFinished = true;
+            ScoreUpdated?.Invoke(this, (int)CalculateScore());
+        }
+
+        return allCheckpointsPassed;
     }
 
     private Score CalculateScore()
     {
-        if (!NoCheckpoints())
+        if (_nextCheckpoint <= Checkpoints.Length - 1)
         {
             return Score.NoStars;
         }
