@@ -75,17 +75,16 @@ public class LevelController : MonoBehaviour
 
     private bool NoTime()
     {
-        if (_levelIsFinished)
-        {
-            return true;
-        }
-
-        var availableTimeElapsed = (_timer.Elapsed.TotalSeconds >= TimeFor1StarInSeconds);
+        var availableTimeElapsed = (_timer.Elapsed.TotalSeconds >= TimeFor1StarInSeconds) || _levelIsFinished;
         if (availableTimeElapsed)
         {
             _timer.Stop();
-            _levelIsFinished = true;
-            TimeEnded?.Invoke(this, (int)CalculateScore());
+
+            if (!_levelIsFinished)
+            {
+                TimeEnded?.Invoke(this, (int)CalculateScore());
+            }
+            _levelIsFinished = true;           
         }
 
         return availableTimeElapsed;       
@@ -93,16 +92,14 @@ public class LevelController : MonoBehaviour
 
     private bool NoCheckpoints()
     {
-        if (_levelIsFinished)
-        {
-            return true;
-        }
-
         var allCheckpointsPassed = _nextCheckpoint > Checkpoints.Length - 1;
         if (allCheckpointsPassed)
         {
+            if (!_levelIsFinished)
+            {
+                ScoreUpdated?.Invoke(this, (int)CalculateScore());
+            }
             _levelIsFinished = true;
-            ScoreUpdated?.Invoke(this, (int)CalculateScore());
         }
 
         return allCheckpointsPassed;
@@ -125,7 +122,7 @@ public class LevelController : MonoBehaviour
             return Score.TwoStars;
         }
 
-        if (_timer.Elapsed.TotalSeconds == TimeFor1StarInSeconds)
+        if (_timer.Elapsed.TotalSeconds <= TimeFor1StarInSeconds)
         {
             return Score.OneStar;
         }
