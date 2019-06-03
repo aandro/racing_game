@@ -666,7 +666,7 @@ GameObject:
   m_Component:
   - component: {fileID: 245685478481322778}
   - component: {fileID: 8790765086515077821}
-  - component: {fileID: 595450781907944565}
+  - component: {fileID: 7348593687969657001}
   m_Layer: 0
   m_Name: CheckpointTrigger
   m_TagString: Untagged
@@ -701,7 +701,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 47.65, y: 6, z: 5}
   m_Center: {x: -14.57, y: 3, z: 0}
---- !u!114 &595450781907944565
+--- !u!114 &7348593687969657001
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -710,11 +710,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 7516722248125826816}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8634e062924929664361c08745211fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 9160a8be1a0206240b157fd56c01b633, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  action: 0
-  target: {fileID: 0}
-  source: {fileID: 7516722248125826816}
   triggerCount: 1
   repeatTrigger: 0
