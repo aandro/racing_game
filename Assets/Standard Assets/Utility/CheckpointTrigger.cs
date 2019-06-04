@@ -22,28 +22,11 @@ public class CheckpointTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!SatisfiesCondition(other))
+        if (!TriggerHelper.SatisfiesCondition(other))
         {
             return;
         }
 
         DoActivateTrigger();
-    }
-
-    private bool SatisfiesCondition(Collider c)
-    {
-        var t = c.transform;
-        do
-        {
-            if (t.GetComponent<CarController>() != null)
-            {
-                return true;
-            }
-
-            t = t.parent;
-        }
-        while (t != null);
-
-        return false;
     }
 }
